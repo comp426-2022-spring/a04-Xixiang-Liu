@@ -2,11 +2,10 @@ import minimist from 'minimist'; // parses argument options
 import express from 'express'; // minimal & flexible Node.js web application framework
 import morgan from 'morgan';
 import fs from 'fs';
+import db from "./database.js";
 
 const app = express()
 
-// Require database SCRIPT file
-const db = require("./database.js");
 // Make Express use its own built-in body parser for both urlencoded and JSON body data.
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
