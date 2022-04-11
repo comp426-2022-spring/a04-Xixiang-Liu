@@ -44,12 +44,15 @@ if (argument.help || argument.h) {
 }
 // If --log=false is passed when running server.js, do not create a log file
 // otherwise, create a log file called access.log
-if (argument.log != false) {
+if (argument.log == true) {
     // Use morgan for logging to files
     // Create a write stream to append (flags: 'a') to a file
     const mylog = fs.createWriteStream('access.log', { flags: 'a' })
     // Set up the access logging middleware
     app.use(morgan('combined', { stream: mylog }))
+}
+else {
+    app.use(morgan('combined'))
 }
 
 app.use((req, res, next) => {
