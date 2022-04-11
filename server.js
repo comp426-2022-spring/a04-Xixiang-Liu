@@ -1,4 +1,3 @@
-import { coinFlips, countFlips, coinFlip, flipACoin } from "./modules/coin.mjs";
 import minimist from 'minimist'; // parses argument options
 import express from 'express'; // minimal & flexible Node.js web application framework
 
@@ -56,6 +55,36 @@ if (args.log != false) {
     app.use(morgan('combined', { stream: WRITESTREAM }))
 }
 
+app.use((req, res, next) => {
+    let logdata = {
+      remoteaddr: req.ip,
+      remoteuser: req.user,
+      time: Date.now(),
+      method: req.method,
+      url: req.url,
+      protocol: req.protocol,
+      httpversion: req.httpVersion,
+      status: res.statusCode,
+      referer: req.headers['referer'],
+      useragent: req.headers['user-agent']
+    }
+
+    const stmt = db.prepare('INSERT INTO accesslog (remoteaddr, remoteuser, time, method, url, protocol, httpversion, status, referer, useragent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+    const info = stmt.run(logdata.remoteaddr, logdata.remoteuser, logdata.time, logdata.method, logdata.url, logdata.protocol, logdata.httpversion, logdata.status, logdata.referer, logdata.useragent)
+    
+    next();
+})
+
+app.get('/app/log/access', (req, res) => {
+    const stmt = logdb.prepare('SELECT * FROM accesslog').all()
+    res.status(200).json(stmt)
+})
+
+app.get('/app/error', (req, res) => {
+    throw new error ('Error test successful')
+})
+
+
 // Check status code endpoint
 app.get('/app/', (req, res) => {
     res.statusCode = 200;
@@ -63,34 +92,6 @@ app.get('/app/', (req, res) => {
     res.writeHead(res.statusCode, { 'Content-Type' : 'text/plain'});
     res.end(res.statusCode+ ' ' +res.statusMessage)
 });
-
-// Endpoint returning JSON of flip function result
-app.get('/app/flip/', (req, res) => {
-    res.statusCode = 200;
-    let aFlip = coinFlip()
-    res.json({flip: aFlip})
-    res.writeHead(res.statusCode, {'Content-Type' : 'application/json'});
-})
-
-// Endpoint returning JSON of flip array & summary
-app.get('/app/flips/:number', (req, res) => {
-    var flips = coinFlips(req.params.number)
-    res.status(200).json({"raw" : flips, "summary" : countFlips(flips)})
-});
-
-app.get('/app/flip/call/heads', (req, res) => {
-    res.statusCode = 200;
-    let answer = flipACoin('heads')
-    res.send(answer)
-    res.writeHead(res.statusCode, {'Content-Type': 'text/plain'});
-})
-
-app.get('/app/flip/call/tails', (req, res) => {
-    res.statusCode = 200;
-    let answer = flipACoin('tails')
-    res.send(answer)
-    res.writeHead(res.statusCode, {'Content-Type': 'text/plain'});
-})
 
 // If not recognized request (other requests)
 app.use(function(req, res){
