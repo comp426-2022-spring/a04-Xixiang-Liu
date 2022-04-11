@@ -1,10 +1,10 @@
 import minimist from 'minimist'; // parses argument options
 import express from 'express'; // minimal & flexible Node.js web application framework
+import morgan from 'morgan';
 
 const app = express()
 
 // require some other stuffs
-const morgan = require('morgan');
 const fs = require('fs');
 
 // Require database SCRIPT file
