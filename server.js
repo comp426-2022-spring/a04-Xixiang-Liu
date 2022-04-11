@@ -73,7 +73,7 @@ app.use((req, res, next) => {
 })
 
 app.get('/app/log/access', (req, res) => {
-    const stmt = logdb.prepare('SELECT * FROM accesslog').all()
+    const stmt = db.prepare('SELECT * FROM accesslog').all()
     res.status(200).json(stmt)
 })
 
