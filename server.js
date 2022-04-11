@@ -38,13 +38,13 @@ server.js [options]
   --help	Return this message and exit.
 `);
 // If --help or -h, echo help text to STDOUT and exit
-if (args.help || args.h) {
+if (argument.help || argument.h) {
     console.log(help)
     process.exit(0)
 }
 // If --log=false is passed when running server.js, do not create a log file
 // otherwise, create a log file called access.log
-if (args.log != false) {
+if (argument.log != false) {
     // Use morgan for logging to files
     // Create a write stream to append (flags: 'a') to a file
     const WRITESTREAM = fs.createWriteStream('access.log', { flags: 'a' })
