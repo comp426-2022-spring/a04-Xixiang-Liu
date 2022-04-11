@@ -26,6 +26,5 @@
   },
   "devDependencies": {
     "electron-rebuild": "^3.2.7"
-  },
-  "type": "module"
+  }
 }
